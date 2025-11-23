@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'org.example'
+group = 'org.my_example'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -10,10 +10,53 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.26.0'
+
+    implementation 'org.testng:testng:7.11.0'
+
+    implementation 'net.datafaker:datafaker:2.5.2'
+
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    testCompileOnly 'org.projectlombok:lombok:1.18.28'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+    implementation 'ch.qos.logback:logback-classic:1.5.18'
 }
 
 test {
-    useJUnitPlatform()
+    useTestNG()
+}
+
+task smoke_tests(type: Test){
+    useTestNG(){
+        suites 'src/test/resources/smoke_tests.xml'
+    }
+}
+
+task smoke_contact_tests(type: Test){
+    useTestNG(){
+        suites 'src/test/resources/smoke_contact_tests.xml'
+    }
+}
+
+task different_tests(type: Test){
+    useTestNG(){
+        def suite = System.getProperty('suite', 'smoke_tests')
+        if(suite.equalsIgnoreCase('smoke_contact_tests')){
+            suites 'src/test/resources/smoke_contact_tests.xml'
+        }else if(suite.equalsIgnoreCase('negative_tests')){
+            suites 'src/test/resources/negative_tests.xml'
+        }else {
+            suites 'src/test/resources/smoke_tests.xml'
+        }
+    }
+}
+
+task browser_tests(type: Test){
+    useTestNG(){
+        if(project.hasProperty('browser'))
+            systemProperty 'browser', "${browser}"
+        suites 'src/test/resources/smoke_tests.xml'
+    }
 }

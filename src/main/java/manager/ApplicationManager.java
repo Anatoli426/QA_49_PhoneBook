@@ -26,6 +26,14 @@ public class ApplicationManager {
         return driver;
     }
 
+    /*
+    также я разобралась с тестами для Safari браузера,
+    он предустановлен на маках, драйвер добавила просто через SafariDriver();
+    но вся проблема в итоге была только в настройках самого Safari,
+    там нужно было через Settings подключить "Show features for web developers"
+    и потом просто "Allow remote automation"
+    */
+
     @BeforeMethod(alwaysRun = true)
     public void setup() {
         //driver = new ChromeDriver();
